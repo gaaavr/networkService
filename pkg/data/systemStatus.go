@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"time"
 )
 
 type ResultT struct {
@@ -22,6 +23,8 @@ type ResultSetT struct {
 	Incident  []IncidentData           `json:"incident"`
 }
 
+var data ResultSetT
+
 func GetResultsData() ResultSetT {
 	var result ResultSetT
 	result.SMS = GetResultsSMS()
@@ -35,6 +38,13 @@ func GetResultsData() ResultSetT {
 }
 
 func NetworkService() {
+	data = GetResultsData()
+	ticker := time.Tick(30 * time.Second)
+	go func() {
+		for range ticker {
+			data = GetResultsData()
+		}
+	}()
 	r := mux.NewRouter()
 	r.HandleFunc("/", handleConnection)
 	http.ListenAndServe("localhost:8282", r)
@@ -42,7 +52,6 @@ func NetworkService() {
 
 func handleConnection(w http.ResponseWriter, r *http.Request) {
 	var status ResultT
-	data := GetResultsData()
 	if data.SMS == nil || data.MMS == nil || data.VoiceCall == nil || len(data.Email) == 0 {
 		status.Error = "Error on collect data"
 	} else if data.Billing == (BillingData{}) || data.Support == nil || data.Incident == nil {
@@ -55,7 +64,9 @@ func handleConnection(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
 	w.WriteHeader(http.StatusOK)
 	w.Write(finalResult)
 	return
+
 }
