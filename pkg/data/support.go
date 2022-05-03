@@ -14,20 +14,23 @@ type SupportData struct {
 	ActiveTickers int    `json:"active_tickets"`
 }
 
-func GetResultsSupport() []int {
+func GetResultsSupport() {
 	var sup *SupportData
 	var arrSup []SupportData
 	var load []int
 	content, err := http.Get("http://127.0.0.1:8383/support")
 	if err != nil {
-		return load
+		Result.Support = load
+		return
 	}
 	if content.StatusCode == 500 {
-		return load
+		Result.Support = load
+		return
 	}
 	data, err := io.ReadAll(content.Body)
 	if err != nil {
-		return load
+		Result.Support = load
+		return
 	}
 	defer content.Body.Close()
 	strData := string(data)
@@ -36,7 +39,8 @@ func GetResultsSupport() []int {
 	for i, _ := range arrData {
 		element = []byte(strings.Trim(arrData[i], " ,"))
 		if err := json.Unmarshal(element, &sup); err != nil {
-			return load
+			Result.Support = load
+			return
 		}
 		arrSup = append(arrSup, *sup)
 	}
@@ -55,5 +59,6 @@ func GetResultsSupport() []int {
 		load = append(load, 3)
 	}
 	load = append(load, int(math.Trunc(waitingTime)))
-	return load
+	Result.Support = load
+	return
 }

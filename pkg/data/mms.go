@@ -2,7 +2,6 @@ package data
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"networkService/pkg/service"
@@ -17,7 +16,7 @@ type MMSData struct {
 	ResponseTime string `json:"response_time"`
 }
 
-func GetResultsMMS() [][]MMSData {
+func GetResultsMMS() {
 	var mms *MMSData
 	var arrMMS []MMSData
 	var finalData [][]MMSData
@@ -25,14 +24,17 @@ func GetResultsMMS() [][]MMSData {
 	providersList := service.GetSMSProvidersList()
 	content, err := http.Get("http://127.0.0.1:8383/mms")
 	if err != nil {
-		return finalData
+		Result.MMS = finalData
+		return
 	}
 	if content.StatusCode == 500 {
-		return finalData
+		Result.MMS = finalData
+		return
 	}
 	data, err := io.ReadAll(content.Body)
 	if err != nil {
-		return finalData
+		Result.MMS = finalData
+		return
 	}
 	defer content.Body.Close()
 	strData := string(data)
@@ -41,8 +43,8 @@ func GetResultsMMS() [][]MMSData {
 	for i, _ := range arrData {
 		element = []byte(strings.Trim(arrData[i], " ,"))
 		if err := json.Unmarshal(element, &mms); err != nil {
-			fmt.Println(finalData)
-			return [][]MMSData{}
+			Result.MMS = finalData
+			return
 		}
 		if countriesList[mms.Country] && providersList[mms.Provider] {
 			arrMMS = append(arrMMS, *mms)
@@ -62,6 +64,7 @@ func GetResultsMMS() [][]MMSData {
 		return arrMMS[i].Country < arrMMS[j].Country
 	})
 	finalData = append(finalData, arrMMS)
-	return finalData
+	Result.MMS = finalData
+	return
 
 }

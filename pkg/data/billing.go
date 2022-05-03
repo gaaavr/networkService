@@ -15,7 +15,7 @@ type BillingData struct {
 	CheckoutPage   bool `json:"checkout_page"`
 }
 
-func GetResultsBilling() BillingData {
+func GetResultsBilling() {
 	var (
 		billing BillingData
 		sum     uint8
@@ -23,12 +23,14 @@ func GetResultsBilling() BillingData {
 	)
 	file, err := os.Open("..\\networkService\\billing.data")
 	if err != nil {
-		return billing
+		Result.Billing = billing
+		return
 	}
 	defer file.Close()
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
-		return billing
+		Result.Billing = billing
+		return
 	}
 	for i := len(data) - 1; i >= 0; i-- {
 		if string(data[i]) == "1" {
@@ -42,5 +44,6 @@ func GetResultsBilling() BillingData {
 	billing.Recurring = sum&(1<<2) != 0
 	billing.FraudControl = sum&(1<<1) != 0
 	billing.CheckoutPage = sum&1 != 0
-	return billing
+	Result.Billing = billing
+	return
 }

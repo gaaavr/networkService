@@ -15,14 +15,15 @@ type EmailData struct {
 	DeliveryTime int    `json:"delivery_time"`
 }
 
-func GetResultsEmail() map[string][][]EmailData {
+func GetResultsEmail() {
 	var email EmailData
 	var emailArr []EmailData
 	countriesList := service.GetCountriesList()
 	providersList := service.GetEmailProvidersList()
 	file, err := os.Open("..\\networkService\\email.data")
 	if err != nil {
-		return map[string][][]EmailData{}
+		Result.Email = map[string][][]EmailData{}
+		return
 	}
 	defer file.Close()
 	fileScanner := bufio.NewScanner(file)
@@ -62,5 +63,6 @@ func GetResultsEmail() map[string][][]EmailData {
 		providers[v] = append(providers[v], speedProviders[:3])
 		providers[v] = append(providers[v], speedProviders[len(speedProviders)-3:])
 	}
-	return providers
+	Result.Email = providers
+	return
 }

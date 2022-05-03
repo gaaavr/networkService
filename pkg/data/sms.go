@@ -15,7 +15,7 @@ type SMSData struct {
 	Provider     string `json:"provider"`
 }
 
-func GetResultsSMS() [][]SMSData {
+func GetResultsSMS() {
 	var sms SMSData
 	var smsArr []SMSData
 	var finalData [][]SMSData
@@ -23,7 +23,8 @@ func GetResultsSMS() [][]SMSData {
 	providersList := service.GetSMSProvidersList()
 	file, err := os.Open("..\\networkService\\sms.data")
 	if err != nil {
-		return finalData
+		Result.SMS = finalData
+		return
 	}
 	defer file.Close()
 	fileScanner := bufio.NewScanner(file)
@@ -55,5 +56,6 @@ func GetResultsSMS() [][]SMSData {
 		return smsArr[i].Country < smsArr[j].Country
 	})
 	finalData = append(finalData, smsArr)
-	return finalData
+	Result.SMS = finalData
+	return
 }

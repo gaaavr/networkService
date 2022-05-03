@@ -14,19 +14,22 @@ type IncidentData struct {
 	Status string `json:"status"`
 }
 
-func GetResultsIncident() []IncidentData {
+func GetResultsIncident() {
 	var incident *IncidentData
 	var arrIncident []IncidentData
 	content, err := http.Get("http://127.0.0.1:8383/accendent")
 	if err != nil {
-		return arrIncident
+		Result.Incident = arrIncident
+		return
 	}
 	if content.StatusCode == 500 {
-		return arrIncident
+		Result.Incident = arrIncident
+		return
 	}
 	data, err := io.ReadAll(content.Body)
 	if err != nil {
-		return arrIncident
+		Result.Incident = arrIncident
+		return
 	}
 	defer content.Body.Close()
 	strData := string(data)
@@ -35,12 +38,14 @@ func GetResultsIncident() []IncidentData {
 	for i, _ := range arrData {
 		element = []byte(strings.Trim(arrData[i], " ,"))
 		if err := json.Unmarshal(element, &incident); err != nil {
-			return arrIncident
+			Result.Incident = arrIncident
+			return
 		}
 		arrIncident = append(arrIncident, *incident)
 	}
 	sort.SliceStable(arrIncident, func(i, j int) bool {
 		return arrIncident[i].Status < arrIncident[j].Status
 	})
-	return arrIncident
+	Result.Incident = arrIncident
+	return
 }

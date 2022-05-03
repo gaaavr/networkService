@@ -23,26 +23,24 @@ type ResultSetT struct {
 	Incident  []IncidentData           `json:"incident"`
 }
 
-var data ResultSetT
+var Result ResultSetT
 
-func GetResultsData() ResultSetT {
-	var result ResultSetT
-	result.SMS = GetResultsSMS()
-	result.MMS = GetResultsMMS()
-	result.VoiceCall = GetResultsVC()
-	result.Email = GetResultsEmail()
-	result.Billing = GetResultsBilling()
-	result.Support = GetResultsSupport()
-	result.Incident = GetResultsIncident()
-	return result
+func GetResultsData() {
+	go GetResultsSMS()
+	go GetResultsMMS()
+	go GetResultsVC()
+	go GetResultsEmail()
+	go GetResultsBilling()
+	go GetResultsSupport()
+	go GetResultsIncident()
 }
 
 func NetworkService() {
-	data = GetResultsData()
+	GetResultsData()
 	ticker := time.Tick(30 * time.Second)
 	go func() {
 		for range ticker {
-			data = GetResultsData()
+			GetResultsData()
 		}
 	}()
 	r := mux.NewRouter()
@@ -52,13 +50,13 @@ func NetworkService() {
 
 func handleConnection(w http.ResponseWriter, r *http.Request) {
 	var status ResultT
-	if data.SMS == nil || data.MMS == nil || data.VoiceCall == nil || len(data.Email) == 0 {
+	if Result.SMS == nil || Result.MMS == nil || Result.VoiceCall == nil || len(Result.Email) == 0 {
 		status.Error = "Error on collect data"
-	} else if data.Billing == (BillingData{}) || data.Support == nil || data.Incident == nil {
+	} else if Result.Billing == (BillingData{}) || Result.Support == nil || Result.Incident == nil {
 		status.Error = "Error on collect data"
 	} else {
 		status.Status = true
-		status.Data = data
+		status.Data = Result
 	}
 	finalResult, err := json.Marshal(status)
 	if err != nil {

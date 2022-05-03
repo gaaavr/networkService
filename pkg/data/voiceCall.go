@@ -19,14 +19,15 @@ type VoiceCallData struct {
 	MedianOfCallsTime   int     `json:"median_of_calls_time"`
 }
 
-func GetResultsVC() []VoiceCallData {
+func GetResultsVC() {
 	var voiceCall VoiceCallData
 	var voiceCallArr []VoiceCallData
 	countriesList := service.GetCountriesList()
 	providersList := service.GetVoiceCallProvidersList()
 	file, err := os.Open("..\\networkService\\voice.data")
 	if err != nil {
-		return voiceCallArr
+		Result.VoiceCall = voiceCallArr
+		return
 	}
 	defer file.Close()
 	fileScanner := bufio.NewScanner(file)
@@ -64,5 +65,6 @@ func GetResultsVC() []VoiceCallData {
 			voiceCallArr = append(voiceCallArr, voiceCall)
 		}
 	}
-	return voiceCallArr
+	Result.VoiceCall = voiceCallArr
+	return
 }
