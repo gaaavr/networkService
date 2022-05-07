@@ -53,6 +53,12 @@ func GetResultsSupport() {
 		}
 		arrSup = append(arrSup, *sup)
 	}
+	if arrSup == nil {
+		Result.Lock()
+		Result.Support = load
+		Result.Unlock()
+		return
+	}
 	const minOneTicket = 3.33
 	var openTickets int
 	for _, v := range arrSup {

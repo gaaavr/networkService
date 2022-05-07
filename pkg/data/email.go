@@ -48,6 +48,12 @@ func GetResultsEmail() {
 			}
 		}
 	}
+	if emailArr == nil {
+		Result.Lock()
+		Result.Email = providers
+		Result.Unlock()
+		return
+	}
 	countries := []string{"RU", "US", "GB", "FR", "BL", "AT", "BG", "DK", "CA", "ES", "CH", "TR", "PE", "NZ", "MC"}
 	for _, v := range countries {
 		speedProviders := make([]EmailData, 0)

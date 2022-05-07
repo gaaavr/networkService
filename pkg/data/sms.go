@@ -48,9 +48,8 @@ func GetResultsSMS() {
 	if smsArr == nil {
 		Result.Lock()
 		Result.SMS = finalData
-		Result.Lock()
+		Result.Unlock()
 		return
-
 	}
 	countries := service.GetFullNamesCountries()
 	for i, _ := range smsArr {

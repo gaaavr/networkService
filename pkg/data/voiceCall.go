@@ -71,6 +71,5 @@ func GetResultsVC() {
 	Result.Lock()
 	Result.VoiceCall = voiceCallArr
 	Result.Unlock()
-
 	return
 }

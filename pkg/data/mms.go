@@ -2,6 +2,7 @@ package data
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"networkService/pkg/service"
@@ -25,6 +26,7 @@ func GetResultsMMS() {
 	providersList := service.GetSMSProvidersList()
 	content, err := http.Get("http://127.0.0.1:8383/mms")
 	if err != nil {
+		fmt.Println(1)
 		Result.Lock()
 		Result.MMS = finalData
 		Result.Unlock()
@@ -58,6 +60,13 @@ func GetResultsMMS() {
 		if countriesList[mms.Country] && providersList[mms.Provider] {
 			arrMMS = append(arrMMS, *mms)
 		}
+	}
+
+	if arrMMS == nil {
+		Result.Lock()
+		Result.MMS = finalData
+		Result.Unlock()
+		return
 	}
 	countries := service.GetFullNamesCountries()
 	for i, _ := range arrMMS {
