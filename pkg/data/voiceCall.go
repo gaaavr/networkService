@@ -20,13 +20,16 @@ type VoiceCallData struct {
 }
 
 func GetResultsVC() {
+	defer wg.Done()
 	var voiceCall VoiceCallData
 	var voiceCallArr []VoiceCallData
 	countriesList := service.GetCountriesList()
 	providersList := service.GetVoiceCallProvidersList()
-	file, err := os.Open("..\\networkService\\voice.data")
+	file, err := os.Open("..\\networkService\\simulator\\voice.data")
 	if err != nil {
+		Result.Lock()
 		Result.VoiceCall = voiceCallArr
+		Result.Unlock()
 		return
 	}
 	defer file.Close()
@@ -65,6 +68,9 @@ func GetResultsVC() {
 			voiceCallArr = append(voiceCallArr, voiceCall)
 		}
 	}
+	Result.Lock()
 	Result.VoiceCall = voiceCallArr
+	Result.Unlock()
+
 	return
 }

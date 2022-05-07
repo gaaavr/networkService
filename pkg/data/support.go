@@ -15,21 +15,28 @@ type SupportData struct {
 }
 
 func GetResultsSupport() {
+	defer wg.Done()
 	var sup *SupportData
 	var arrSup []SupportData
 	var load []int
 	content, err := http.Get("http://127.0.0.1:8383/support")
 	if err != nil {
+		Result.Lock()
 		Result.Support = load
+		Result.Unlock()
 		return
 	}
 	if content.StatusCode == 500 {
+		Result.Lock()
 		Result.Support = load
+		Result.Unlock()
 		return
 	}
 	data, err := io.ReadAll(content.Body)
 	if err != nil {
+		Result.Lock()
 		Result.Support = load
+		Result.Unlock()
 		return
 	}
 	defer content.Body.Close()
@@ -39,7 +46,9 @@ func GetResultsSupport() {
 	for i, _ := range arrData {
 		element = []byte(strings.Trim(arrData[i], " ,"))
 		if err := json.Unmarshal(element, &sup); err != nil {
+			Result.Lock()
 			Result.Support = load
+			Result.Unlock()
 			return
 		}
 		arrSup = append(arrSup, *sup)
@@ -59,6 +68,8 @@ func GetResultsSupport() {
 		load = append(load, 3)
 	}
 	load = append(load, int(math.Trunc(waitingTime)))
+	Result.Lock()
 	Result.Support = load
+	Result.Unlock()
 	return
 }

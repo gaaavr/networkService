@@ -16,13 +16,17 @@ type EmailData struct {
 }
 
 func GetResultsEmail() {
+	defer wg.Done()
 	var email EmailData
 	var emailArr []EmailData
+	providers := make(map[string][][]EmailData)
 	countriesList := service.GetCountriesList()
 	providersList := service.GetEmailProvidersList()
-	file, err := os.Open("..\\networkService\\email.data")
+	file, err := os.Open("..\\networkService\\simulator\\email.data")
 	if err != nil {
+		Result.Lock()
 		Result.Email = map[string][][]EmailData{}
+		Result.Unlock()
 		return
 	}
 	defer file.Close()
@@ -44,7 +48,6 @@ func GetResultsEmail() {
 			}
 		}
 	}
-	providers := make(map[string][][]EmailData)
 	countries := []string{"RU", "US", "GB", "FR", "BL", "AT", "BG", "DK", "CA", "ES", "CH", "TR", "PE", "NZ", "MC"}
 	for _, v := range countries {
 		speedProviders := make([]EmailData, 0)
@@ -63,6 +66,8 @@ func GetResultsEmail() {
 		providers[v] = append(providers[v], speedProviders[:3])
 		providers[v] = append(providers[v], speedProviders[len(speedProviders)-3:])
 	}
+	Result.Lock()
 	Result.Email = providers
+	Result.Unlock()
 	return
 }

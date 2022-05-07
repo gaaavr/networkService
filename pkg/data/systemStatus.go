@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -14,6 +15,7 @@ type ResultT struct {
 	Error  string     `json:"error"`
 }
 type ResultSetT struct {
+	sync.Mutex
 	SMS       [][]SMSData              `json:"sms"`
 	MMS       [][]MMSData              `json:"mms"`
 	VoiceCall []VoiceCallData          `json:"voice_call"`
@@ -24,8 +26,10 @@ type ResultSetT struct {
 }
 
 var Result ResultSetT
+var wg sync.WaitGroup
 
 func GetResultsData() {
+	wg.Add(7)
 	go GetResultsSMS()
 	go GetResultsMMS()
 	go GetResultsVC()
@@ -33,6 +37,7 @@ func GetResultsData() {
 	go GetResultsBilling()
 	go GetResultsSupport()
 	go GetResultsIncident()
+	wg.Wait()
 }
 
 func NetworkService() {

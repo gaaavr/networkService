@@ -16,14 +16,17 @@ type SMSData struct {
 }
 
 func GetResultsSMS() {
+	defer wg.Done()
 	var sms SMSData
 	var smsArr []SMSData
 	var finalData [][]SMSData
 	countriesList := service.GetCountriesList()
 	providersList := service.GetSMSProvidersList()
-	file, err := os.Open("..\\networkService\\sms.data")
+	file, err := os.Open("..\\networkService\\simulator\\sms.data")
 	if err != nil {
+		Result.Lock()
 		Result.SMS = finalData
+		Result.Lock()
 		return
 	}
 	defer file.Close()
@@ -42,6 +45,13 @@ func GetResultsSMS() {
 			smsArr = append(smsArr, sms)
 		}
 	}
+	if smsArr == nil {
+		Result.Lock()
+		Result.SMS = finalData
+		Result.Lock()
+		return
+
+	}
 	countries := service.GetFullNamesCountries()
 	for i, _ := range smsArr {
 		smsArr[i].Country = countries[smsArr[i].Country]
@@ -56,6 +66,8 @@ func GetResultsSMS() {
 		return smsArr[i].Country < smsArr[j].Country
 	})
 	finalData = append(finalData, smsArr)
+	Result.Lock()
 	Result.SMS = finalData
+	Result.Unlock()
 	return
 }

@@ -16,20 +16,25 @@ type BillingData struct {
 }
 
 func GetResultsBilling() {
+	defer wg.Done()
 	var (
 		billing BillingData
 		sum     uint8
 		counter float64
 	)
-	file, err := os.Open("..\\networkService\\billing.data")
+	file, err := os.Open("..\\networkService\\simulator\\billing.data")
 	if err != nil {
+		Result.Lock()
 		Result.Billing = billing
+		Result.Unlock()
 		return
 	}
 	defer file.Close()
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
+		Result.Lock()
 		Result.Billing = billing
+		Result.Unlock()
 		return
 	}
 	for i := len(data) - 1; i >= 0; i-- {
@@ -44,6 +49,8 @@ func GetResultsBilling() {
 	billing.Recurring = sum&(1<<2) != 0
 	billing.FraudControl = sum&(1<<1) != 0
 	billing.CheckoutPage = sum&1 != 0
+	Result.Lock()
 	Result.Billing = billing
+	Result.Unlock()
 	return
 }
