@@ -26,7 +26,7 @@ func GetResultsSMS() {
 	if err != nil {
 		Result.Lock()
 		Result.SMS = finalData
-		Result.Lock()
+		Result.Unlock()
 		return
 	}
 	defer file.Close()
