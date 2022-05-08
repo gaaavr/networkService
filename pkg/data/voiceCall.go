@@ -25,7 +25,7 @@ func GetResultsVC() {
 	var voiceCallArr []VoiceCallData
 	countriesList := service.GetCountriesList()
 	providersList := service.GetVoiceCallProvidersList()
-	file, err := os.Open("..\\networkService\\simulator\\voice.data")
+	file, err := os.Open("..\\simulator\\voice.data")
 	if err != nil {
 		Result.Lock()
 		Result.VoiceCall = voiceCallArr

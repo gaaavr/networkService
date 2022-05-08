@@ -22,7 +22,7 @@ func GetResultsEmail() {
 	providers := make(map[string][][]EmailData)
 	countriesList := service.GetCountriesList()
 	providersList := service.GetEmailProvidersList()
-	file, err := os.Open("..\\networkService\\simulator\\email.data")
+	file, err := os.Open("..\\simulator\\email.data")
 	if err != nil {
 		Result.Lock()
 		Result.Email = map[string][][]EmailData{}

@@ -2,7 +2,6 @@ package data
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"networkService/pkg/service"
@@ -26,7 +25,6 @@ func GetResultsMMS() {
 	providersList := service.GetSMSProvidersList()
 	content, err := http.Get("http://127.0.0.1:8383/mms")
 	if err != nil {
-		fmt.Println(1)
 		Result.Lock()
 		Result.MMS = finalData
 		Result.Unlock()

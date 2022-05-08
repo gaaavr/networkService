@@ -22,7 +22,7 @@ func GetResultsSMS() {
 	var finalData [][]SMSData
 	countriesList := service.GetCountriesList()
 	providersList := service.GetSMSProvidersList()
-	file, err := os.Open("..\\networkService\\simulator\\sms.data")
+	file, err := os.Open("..\\simulator\\sms.data")
 	if err != nil {
 		Result.Lock()
 		Result.SMS = finalData

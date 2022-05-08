@@ -22,7 +22,7 @@ func GetResultsBilling() {
 		sum     uint8
 		counter float64
 	)
-	file, err := os.Open("..\\networkService\\simulator\\billing.data")
+	file, err := os.Open("..\\simulator\\billing.data")
 	if err != nil {
 		Result.Lock()
 		Result.Billing = billing
